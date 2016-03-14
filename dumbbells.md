@@ -100,7 +100,7 @@ confusionMatrix(reference=training$classe, predict(fit1, training))$overall["Acc
 
 ```
 ##  Accuracy 
-## 0.5272455
+## 0.5264302
 ```
 
 ```r
@@ -110,7 +110,7 @@ confusionMatrix(reference=validation$classe, predict(fit1, validation))$overall[
 
 ```
 ##  Accuracy 
-## 0.5354812
+## 0.5203915
 ```
 
 ```r
@@ -123,7 +123,7 @@ confusionMatrix(reference=training$classe, predict(fit2, training))$overall["Acc
 
 ```
 ##  Accuracy 
-## 0.7017258
+## 0.7023373
 ```
 
 ```r
@@ -133,7 +133,7 @@ confusionMatrix(reference=validation$classe, predict(fit2, validation))$overall[
 
 ```
 ##  Accuracy 
-## 0.7128874
+## 0.7104405
 ```
 
 ```r
@@ -155,7 +155,7 @@ confusionMatrix(reference=training$classe, predict(fit3, training))$overall["Acc
 
 ```
 ##  Accuracy 
-## 0.4953119
+## 0.4922544
 ```
 
 ```r
@@ -165,21 +165,82 @@ confusionMatrix(reference=validation$classe, predict(fit3, validation))$overall[
 
 ```
 ##  Accuracy 
-## 0.4979608
+## 0.5036705
 ```
 
-Among these models, we see that LDA without Princpal Component preprocessing provides the best accuracy.  We apply this model to the test data.
+```r
+set.seed(8)
+#boosting w/ trees
+fit4 <- train(classe~., method="gbm", data=training, verbose=FALSE)
+```
+
+```
+## Loading required package: gbm
+```
+
+```
+## Loading required package: survival
+```
+
+```
+## 
+## Attaching package: 'survival'
+```
+
+```
+## The following object is masked from 'package:caret':
+## 
+##     cluster
+```
+
+```
+## Loading required package: splines
+```
+
+```
+## Loading required package: parallel
+```
+
+```
+## Loaded gbm 2.1.1
+```
+
+```
+## Loading required package: plyr
+```
+
+```r
+#in sample accuracy
+confusionMatrix(reference=training$classe, predict(fit4, training))$overall["Accuracy"]
+```
+
+```
+##  Accuracy 
+## 0.9727545
+```
+
+```r
+#out of sample accuracy
+confusionMatrix(reference=validation$classe, predict(fit4, validation))$overall["Accuracy"]
+```
+
+```
+##  Accuracy 
+## 0.9632953
+```
+
+Among these models, boosting provides the best accuracy by far.  We apply this model to the test data.
 
 
 ```r
-predict(fit2, testing)
+predict(fit4, testing)
 ```
 
 ```
-##  [1] B A B C A C D D A A D A B A E A A B B B
+##  [1] B A B A A E D B A A B C B A E E A B B B
 ## Levels: A B C D E
 ```
 
 ## Conclusion
 
-The caret package offers numerous methods to build prediction models.  It is disappointing that I was only able to reach ~70% accuracy with the models above.  Due to time constraints, I was not able to include random forest, boosting, or support vector machine in this first iteration of this report.
+The caret package offers numerous methods to build prediction models.  With the default settings, GBM provided surprisingly high accuracy. Due to time constraints, I was not able to compare GBM against random forest or support vector machine. I hope to be able to include them in the next iteration of this report along with additional supporting analysis.
