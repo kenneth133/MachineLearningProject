@@ -131,22 +131,22 @@ fit1 &lt;- train(classe~., method=&quot;lda&quot;, preProcess=&quot;pca&quot;, d
 <pre class="r"><code>#in sample accuracy
 confusionMatrix(reference=training$classe, predict(fit1, training))$overall[&quot;Accuracy&quot;]</code></pre>
 <pre><code>##  Accuracy 
-## 0.5272455</code></pre>
+## 0.5264302</code></pre>
 <pre class="r"><code>#out of sample accuracy
 confusionMatrix(reference=validation$classe, predict(fit1, validation))$overall[&quot;Accuracy&quot;]</code></pre>
 <pre><code>##  Accuracy 
-## 0.5354812</code></pre>
+## 0.5203915</code></pre>
 <pre class="r"><code>set.seed(8)
 #linear discriminate analysis w/o principal component analysis
 fit2 &lt;- train(classe~., method=&quot;lda&quot;, data=training)
 #in sample accuracy
 confusionMatrix(reference=training$classe, predict(fit2, training))$overall[&quot;Accuracy&quot;]</code></pre>
 <pre><code>##  Accuracy 
-## 0.7017258</code></pre>
+## 0.7023373</code></pre>
 <pre class="r"><code>#out of sample accuracy
 confusionMatrix(reference=validation$classe, predict(fit2, validation))$overall[&quot;Accuracy&quot;]</code></pre>
 <pre><code>##  Accuracy 
-## 0.7128874</code></pre>
+## 0.7104405</code></pre>
 <pre class="r"><code># Tree-Based Predictions
 # ======================
 set.seed(8)
@@ -156,19 +156,41 @@ fit3 &lt;- train(classe~., method=&quot;rpart&quot;, data=training)</code></pre>
 <pre class="r"><code>#in sample accuracy
 confusionMatrix(reference=training$classe, predict(fit3, training))$overall[&quot;Accuracy&quot;]</code></pre>
 <pre><code>##  Accuracy 
-## 0.4953119</code></pre>
+## 0.4922544</code></pre>
 <pre class="r"><code>#out of sample accuracy
 confusionMatrix(reference=validation$classe, predict(fit3, validation))$overall[&quot;Accuracy&quot;]</code></pre>
 <pre><code>##  Accuracy 
-## 0.4979608</code></pre>
-<p>Among these models, we see that LDA without Princpal Component preprocessing provides the best accuracy. We apply this model to the test data.</p>
-<pre class="r"><code>predict(fit2, testing)</code></pre>
-<pre><code>##  [1] B A B C A C D D A A D A B A E A A B B B
+## 0.5036705</code></pre>
+<pre class="r"><code>set.seed(8)
+#boosting w/ trees
+fit4 &lt;- train(classe~., method=&quot;gbm&quot;, data=training, verbose=FALSE)</code></pre>
+<pre><code>## Loading required package: gbm</code></pre>
+<pre><code>## Loading required package: survival</code></pre>
+<pre><code>## 
+## Attaching package: 'survival'</code></pre>
+<pre><code>## The following object is masked from 'package:caret':
+## 
+##     cluster</code></pre>
+<pre><code>## Loading required package: splines</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## Loaded gbm 2.1.1</code></pre>
+<pre><code>## Loading required package: plyr</code></pre>
+<pre class="r"><code>#in sample accuracy
+confusionMatrix(reference=training$classe, predict(fit4, training))$overall[&quot;Accuracy&quot;]</code></pre>
+<pre><code>##  Accuracy 
+## 0.9727545</code></pre>
+<pre class="r"><code>#out of sample accuracy
+confusionMatrix(reference=validation$classe, predict(fit4, validation))$overall[&quot;Accuracy&quot;]</code></pre>
+<pre><code>##  Accuracy 
+## 0.9632953</code></pre>
+<p>Among these models, boosting provides the best accuracy by far. We apply this model to the test data.</p>
+<pre class="r"><code>predict(fit4, testing)</code></pre>
+<pre><code>##  [1] B A B A A E D B A A B C B A E E A B B B
 ## Levels: A B C D E</code></pre>
 </div>
 <div id="conclusion" class="section level2">
 <h2>Conclusion</h2>
-<p>The caret package offers numerous methods to build prediction models. It is disappointing that I was only able to reach ~70% accuracy with the models above. Due to time constraints, I was not able to include random forest, boosting, or support vector machine in this first iteration of this report.</p>
+<p>The caret package offers numerous methods to build prediction models. With the default settings, GBM provided surprisingly high accuracy. Due to time constraints, I was not able to compare GBM against random forest or support vector machine. I hope to be able to include them in the next iteration of this report along with additional supporting analysis.</p>
 </div>
 
 
